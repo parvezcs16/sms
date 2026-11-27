@@ -1,0 +1,51 @@
+{
+  "name": "school-management-system",
+  "version": "1.12.1",
+  "private": true,
+  "productName": "CHAND School Management",
+  "description": "CHAND School Management System",
+  "author": "CHAND School Management System",
+  "main": "electron/main.js",
+  "scripts": {
+    "setup": "npm install && cd client && npm install",
+    "start": "npm run build:server && electron .",
+    "dev": "concurrently \"cd server && npm start\" \"cd client && npm run dev\"",
+    "build:client": "cd client && npm run build",
+    "build:server": "node scripts/build-server.js",
+    "build": "npm run build:client && npm run build:server",
+    "test": "node --test",
+    "license-admin": "node scripts/license-admin-page.js",
+    "dist": "electron-builder --config electron/builder.config.json",
+    "package:win": "npm run build && npm run dist",
+    "build:license-admin": "node scripts/build-license-admin.js",
+    "package:license-admin": "node scripts/build-license-admin.js && electron-builder --config license-admin/builder.config.json",
+    "package:pzm": "node scripts/package-brand.js pzm"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.23",
+    "bcryptjs": "^2.4.3",
+    "bwip-js": "^4.5.1",
+    "cors": "^2.8.5",
+    "docx": "^9.1.0",
+    "exceljs": "^4.4.0",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.1",
+    "nodemailer": "^9.0.3",
+    "pdfkit": "^0.15.1",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1",
+    "electron": "^43.2.0",
+    "electron-builder": "^25.1.8",
+    "esbuild": "^0.21.5",
+    "playwright": "^1.62.0"
+  },
+  "allowScripts": {
+    "electron@43.2.0": true,
+    "esbuild@0.21.5": true,
+    "@whiskeysockets/baileys@6.7.23": true,
+    "protobufjs@7.6.5": true
+  }
+}

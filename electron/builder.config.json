@@ -1,0 +1,44 @@
+{
+  "appId": "com.school.management.system",
+  "productName": "CHAND School Management",
+  "copyright": "CHAND School Management System",
+  "directories": {
+    "output": "dist-electron",
+    "buildResources": "build"
+  },
+  "asar": true,
+  "files": [
+    "electron/**/*",
+    "server-dist/**/*",
+    "client/dist/**/*",
+    "package.json",
+    "!**/*.map"
+  ],
+  "extraMetadata": {
+    "main": "electron/main.js"
+  },
+  "win": {
+    "icon": "build/icon.ico",
+    "target": [
+      { "target": "nsis", "arch": ["x64"] },
+      { "target": "portable", "arch": ["x64"] }
+    ],
+    "signAndEditExecutable": true
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "CHAND School Management",
+    "installerIcon": "build/icon.ico",
+    "uninstallerIcon": "build/icon.ico",
+    "installerHeaderIcon": "build/icon.ico",
+    "deleteAppDataOnUninstall": false,
+    "artifactName": "CHAND-School-Management-Setup-${version}.${ext}"
+  },
+  "portable": {
+    "artifactName": "CHAND-School-Management-Portable-${version}.exe"
+  }
+}

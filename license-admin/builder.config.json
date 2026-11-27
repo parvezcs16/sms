@@ -1,0 +1,20 @@
+{
+  "appId": "com.chand.license.admin",
+  "productName": "CHAND License Admin",
+  "electronVersion": "43.2.0",
+  "directories": {
+    "app": "license-admin-app",
+    "output": "dist-license-admin",
+    "buildResources": "license-admin"
+  },
+  "asar": true,
+  "files": ["**/*"],
+  "win": {
+    "icon": "license-admin/icon.ico",
+    "target": [{ "target": "portable", "arch": ["x64"] }],
+    "signAndEditExecutable": true
+  },
+  "portable": {
+    "artifactName": "CHAND-License-Admin-${version}.exe"
+  }
+}

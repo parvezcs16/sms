@@ -1,0 +1,18 @@
+{
+  "id": "pzm",
+  "name": "PZM Solutions",
+  "shortName": "PZM",
+  "tagline": "School Management",
+  "productName": "PZM School Management",
+  "fullName": "PZM Solutions School Management System",
+  "phone": "0306 3124394",
+  "appId": "com.pzmsolutions.school.management",
+  "packageName": "pzm-school-management",
+  "dataFolder": "pzm-school-management",
+  "fileSlug": "PZM-School-Management",
+  "logo": "pzm-logo.png",
+  "supportPhone": "0306 3124394",
+  "supportWhatsapp": "0306 3124394",
+  "supportEmail": "support@example.com",
+  "supportHours": "Mon - Sat, 9:00 AM - 6:00 PM"
+}

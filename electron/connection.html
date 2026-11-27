@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:" />
+  <title>CHAND School Management — Connection</title>
+  <style>
+    :root { --navy: #0b2160; --gold: #f2a81d; --bg: #f5f7fb; --card: #fff; --text: #14213d; --muted: #5d6b82; --border: #dde3ee; --ok: #15803d; --err: #b91c1c; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); }
+    header { text-align: center; padding: 18px 16px 6px; }
+    header img { width: 220px; max-width: 70%; }
+    main { padding: 8px 22px 24px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; margin-bottom: 14px; }
+    .option { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; }
+    .option input { margin-top: 4px; }
+    .option b { color: var(--navy); }
+    p { margin: 4px 0; }
+    .muted { color: var(--muted); font-size: 0.9rem; }
+    .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+    input[type=text] { flex: 1; min-width: 220px; padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; }
+    button { background: var(--navy); color: #fff; border: 0; border-radius: 8px; padding: 9px 16px; font-weight: 600; cursor: pointer; font-size: 0.92rem; }
+    button.secondary { background: #e8edf7; color: var(--navy); }
+    button:disabled { opacity: 0.55; cursor: default; }
+    .servers button { display: block; width: 100%; text-align: left; margin-top: 6px; background: #f0f4fb; color: var(--text); font-weight: 500; }
+    .msg { padding: 10px 12px; border-radius: 8px; margin-bottom: 12px; font-size: 0.92rem; display: none; }
+    .msg.show { display: block; }
+    .msg.err { background: #fde8e8; color: var(--err); }
+    .msg.ok { background: #e3f6e8; color: var(--ok); }
+    .footer { display: flex; justify-content: flex-end; gap: 8px; }
+    .divider { height: 3px; width: 60px; background: var(--gold); border-radius: 2px; margin: 6px auto 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <img id="brand-logo" alt="" />
+    <div class="divider"></div>
+  </header>
+  <main>
+    <div id="msg" class="msg"></div>
+
+    <div class="card">
+      <label class="option">
+        <input type="radio" name="mode" value="server" id="mode-server" />
+        <div>
+          <b>This PC is the main server</b>
+          <p class="muted">The school's database lives on this PC. Phones and other PCs connect to it. Keep this PC switched on during school hours. Use this on <b>one</b> PC only.</p>
+          <p class="muted" id="this-pc"></p>
+        </div>
+      </label>
+      <div class="row">
+        <button class="secondary" id="firewall">Allow through Windows Firewall</button>
+        <span class="muted" id="firewall-status">Needed once so phones and other PCs can connect.</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <label class="option">
+        <input type="radio" name="mode" value="client" id="mode-client" />
+        <div>
+          <b>Connect to the main server PC</b>
+          <p class="muted">Use this on every other office PC. They all work on the same live data as the main server, so anything entered on one PC shows up on every other PC and phone straight away.</p>
+        </div>
+      </label>
+      <div class="row">
+        <input type="text" id="server-url" placeholder="Server address, e.g. 192.168.1.10" />
+        <button class="secondary" id="test">Test</button>
+      </div>
+      <div class="row">
+        <button class="secondary" id="discover">Find servers on this network</button>
+        <span class="muted" id="discover-status"></span>
+      </div>
+      <div class="servers" id="servers"></div>
+    </div>
+
+    <div class="footer">
+      <button id="save">Save &amp; Restart</button>
+    </div>
+  </main>
+
+  <script>
+    const desktop = window.smsDesktop;
+    const $ = (id) => document.getElementById(id);
+    function show(text, kind) {
+      const el = $('msg');
+      el.textContent = text || '';
+      el.className = 'msg' + (text ? ' show ' + (kind || 'err') : '');
+    }
+    const initialMessage = new URLSearchParams(location.search).get('message');
+    if (initialMessage) show(initialMessage, 'err');
+    desktop.onMessage((m) => m && show(m, 'err'));
+
+    function selectMode(mode) {
+      $('mode-server').checked = mode === 'server';
+      $('mode-client').checked = mode === 'client';
+    }
+
+    let brandName = 'CHAND';
+    desktop.getConnection().then((conn) => {
+      selectMode(conn.mode);
+      if (conn.serverUrl) $('server-url').value = conn.serverUrl;
+      $('this-pc').textContent = 'App version ' + conn.version + ' · port ' + conn.port;
+      if (conn.brand) {
+        brandName = conn.brand.productName;
+        document.title = conn.brand.productName + ' — Connection';
+        const logo = document.getElementById('brand-logo');
+        logo.src = conn.brand.logo; logo.alt = conn.brand.fullName;
+        if (conn.brand.phone) $('this-pc').textContent += ' · Support: ' + conn.brand.phone;
+      }
+    });
+
+    $('server-url').addEventListener('input', () => selectMode('client'));
+
+    $('test').onclick = async () => {
+      selectMode('client');
+      show('Testing…', 'ok');
+      const r = await desktop.testServer($('server-url').value);
+      if (r.ok) show('Connected to ' + r.url + (r.version ? ' (version ' + r.version + ')' : ''), 'ok');
+      else show(r.error || 'Could not connect', 'err');
+    };
+
+    $('discover').onclick = async () => {
+      $('discover').disabled = true;
+      $('discover-status').textContent = 'Searching…';
+      $('servers').innerHTML = '';
+      const list = await desktop.discoverServers();
+      $('discover').disabled = false;
+      $('discover-status').textContent = list.length ? list.length + ' found — click one to use it' : 'None found. Make sure the server PC has the app open and the firewall is allowed, or type its address.';
+      list.forEach((s) => {
+        const b = document.createElement('button');
+        b.textContent = (s.schoolName || (brandName + ' server')) + ' — ' + s.host + ' (' + s.url + ')';
+        b.onclick = () => { $('server-url').value = s.url; selectMode('client'); show('Selected ' + s.url, 'ok'); };
+        $('servers').appendChild(b);
+      });
+    };
+
+    $('firewall').onclick = async () => {
+      $('firewall-status').textContent = 'Waiting for Windows permission…';
+      const r = await desktop.allowFirewall();
+      $('firewall-status').textContent = r.ok ? 'Done — this PC now accepts connections from phones and other PCs.' : (r.error || 'Failed');
+    };
+
+    $('save').onclick = async () => {
+      const mode = $('mode-client').checked ? 'client' : 'server';
+      $('save').disabled = true;
+      show(mode === 'client' ? 'Connecting…' : 'Restarting…', 'ok');
+      const r = await desktop.saveConnection({ mode, serverUrl: $('server-url').value });
+      if (!r.ok) {
+        $('save').disabled = false;
+        show(r.error || 'Could not save', 'err');
+      }
+    };
+  </script>
+</body>
+</html>

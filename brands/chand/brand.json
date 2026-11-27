@@ -1,0 +1,18 @@
+{
+  "id": "chand",
+  "name": "CHAND",
+  "shortName": "CHAND",
+  "tagline": "School Management",
+  "productName": "CHAND School Management",
+  "fullName": "CHAND School Management System",
+  "phone": "",
+  "appId": "com.school.management.system",
+  "packageName": "school-management-system",
+  "dataFolder": "school-management-system",
+  "fileSlug": "CHAND-School-Management",
+  "logo": "chand-logo.png",
+  "supportPhone": "0300 0000000",
+  "supportWhatsapp": "0300 0000000",
+  "supportEmail": "support@example.com",
+  "supportHours": "Mon - Sat, 9:00 AM - 6:00 PM"
+}

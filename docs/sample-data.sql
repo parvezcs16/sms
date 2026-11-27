@@ -1,0 +1,11 @@
+-- Sample data is generated programmatically rather than as a static SQL dump,
+-- since IDs, hashed passwords, and generated codes (student/admission/teacher
+-- numbers) need to be produced through the app's own logic to stay consistent.
+--
+-- To load sample data (classes, sections, subjects, teachers with logins,
+-- students with guardians, a fee structure, and a few question-bank entries):
+--
+--   node scripts/seed-demo-data.js
+--
+-- See scripts/seed-demo-data.js for exactly what it creates, and the printed
+-- output for demo login credentials.
